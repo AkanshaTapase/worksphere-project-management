@@ -1,60 +1,70 @@
+
 package com.worksphere.worksphere.controller;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-
-import com.worksphere.worksphere.entity.Employee;
-import com.worksphere.worksphere.service.EmployeeService;
-
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PutMapping;
-
 import jakarta.validation.Valid;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-
-
+import com.worksphere.worksphere.dto.EmployeeRequestDTO;
+import com.worksphere.worksphere.dto.EmployeeResponseDTO;
+import com.worksphere.worksphere.service.EmployeeService;
 
 @RestController
-@RequestMapping("api/employees")
+@RequestMapping("/api/employees")
 public class EmployeeController {
-    
+
     private final EmployeeService employeeService;
 
     public EmployeeController(EmployeeService employeeService) {
         this.employeeService = employeeService;
     }
-    
 
+    // CREATE
+    @PostMapping
+    public ResponseEntity<EmployeeResponseDTO> addEmployee(
+            @Valid @RequestBody EmployeeRequestDTO dto) {
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(employeeService.addEmployee(dto));
+    }
+
+    // READ ALL
     @GetMapping
-    public List<Employee> getAllEmployees() {
-        return employeeService.getAllEmployees();
+    public ResponseEntity<List<EmployeeResponseDTO>> getAllEmployees() {
+
+        return ResponseEntity.ok(employeeService.getAllEmployees());
     }
 
+    // READ BY ID
     @GetMapping("/{id}")
-    public Employee getEmployeeById(@PathVariable Long id) {
-        return employeeService.getEmployeeById(id);
-    }
-    
-    @PostMapping()
-    public Employee addEmployee(@Valid @RequestBody Employee employee) {
-        return employeeService.addEmployee(employee);
-    }
-    
-    @PutMapping("/{id}")
-    public Employee updateEmployee(@PathVariable Long id, @Valid @RequestBody Employee employee) {
-       return employeeService.updateEmployee(id, employee);
+    public ResponseEntity<EmployeeResponseDTO> getEmployeeById(
+            @PathVariable Long id) {
+
+        return ResponseEntity.ok(
+                employeeService.getEmployeeById(id));
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteEmployee(@PathVariable Long id) {
-        employeeService.deleteEmployee(id);
+    // UPDATE
+    @PutMapping("/{id}")
+    public ResponseEntity<EmployeeResponseDTO> updateEmployee(
+            @PathVariable Long id,
+            @Valid @RequestBody EmployeeRequestDTO dto) {
+
+        return ResponseEntity.ok(
+                employeeService.updateEmployee(id, dto));
     }
-    
+
+    // DELETE
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteEmployee(
+            @PathVariable Long id) {
+
+        employeeService.deleteEmployee(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

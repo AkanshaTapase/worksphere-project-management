@@ -17,13 +17,21 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<Map<String,String>>handleValidation(MethodArgumentNotValidException ex){
-    Map<String,String>errors=new HashMap<>();
+    public ResponseEntity<Map<String, String>> handleValidation(
+            MethodArgumentNotValidException ex) {
 
-    ex.getBindingResult().getFieldErrors().forEach(error->errors.put(error.getField(),error.getDefaultMessage()));
+        Map<String, String> errors = new HashMap<>();
+
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                errors.put(error.getField(), error.getDefaultMessage()));
+
+        return ResponseEntity.badRequest().body(errors);
+    }
+  //handles all other exceptions
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<Map<String,String>> handleGlobalException(Exception ex){
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("Error","An unexprected error occured"));
   }
-
-
 
 
 }
