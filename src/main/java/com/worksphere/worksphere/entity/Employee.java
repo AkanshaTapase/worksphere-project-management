@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
-
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.FetchType;
 @Entity
 @Table(name = "employees")
 @Getter
@@ -20,6 +22,9 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "emp_id", nullable = false, unique = true)
+    private String empId;
 
     @NotBlank(message= "Name is required")
     @Size(max=100,message="Name cannot exceed 100 characters")
@@ -36,4 +41,9 @@ public class Employee {
 
     private String designation;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", unique = true)
+    private AppUser user;
+        
+    
 }

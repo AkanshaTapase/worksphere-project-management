@@ -16,6 +16,16 @@ public class GlobalExceptionHandler {
 
   }
 
+ @ExceptionHandler(DuplicateEmployeeIdException.class)
+  public ResponseEntity<Map<String, String>> handleDuplicateEmployeeId(
+        DuplicateEmployeeIdException ex) {
+
+    return ResponseEntity
+            .status(HttpStatus.CONFLICT)
+            .body(Map.of("error", ex.getMessage()));
+  }
+
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidation(
             MethodArgumentNotValidException ex) {

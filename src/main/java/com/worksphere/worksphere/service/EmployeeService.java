@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import com.worksphere.worksphere.dto.EmployeeRequestDTO;
 import com.worksphere.worksphere.dto.EmployeeResponseDTO;
 import com.worksphere.worksphere.entity.Employee;
+import com.worksphere.worksphere.exception.DuplicateEmployeeIdException;
 import com.worksphere.worksphere.exception.ResourceNotFoundException;
 import com.worksphere.worksphere.repository.EmployeeRepository;
+
 
 @Service
 public class EmployeeService {
@@ -23,17 +25,23 @@ public class EmployeeService {
     // CREATE
     public EmployeeResponseDTO addEmployee(EmployeeRequestDTO dto) {
 
-    Employee employee = new Employee();
+        if (employeeRepository.existsByEmpId(dto.getEmpId())) {
+            throw new DuplicateEmployeeIdException(
+                    "Employee already exists with emp_id: " + dto.getEmpId());
+        }
 
-    employee.setName(dto.getName());
-    employee.setEmail(dto.getEmail());
-    employee.setDepartment(dto.getDepartment());
-    employee.setDesignation(dto.getDesignation());
+        Employee employee = new Employee();
 
-    Employee saved = employeeRepository.save(employee);
+        employee.setEmpId(dto.getEmpId());
+        employee.setName(dto.getName());
+        employee.setEmail(dto.getEmail());
+        employee.setDepartment(dto.getDepartment());
+        employee.setDesignation(dto.getDesignation());
 
-    return convertToDTO(saved);
-}
+        Employee saved = employeeRepository.save(employee);
+
+        return convertToDTO(saved);
+    }
 
     // READ ALL
     public List<EmployeeResponseDTO> getAllEmployees() {
@@ -44,19 +52,20 @@ public class EmployeeService {
                 .toList();
     }
 
-    // READ BY ID
-    public EmployeeResponseDTO getEmployeeById(Long id) {
+    // READ BY EMPLOYEE ID
+    public EmployeeResponseDTO getEmployeeById(String empId) {
 
-        Employee employee = findEmployee(id);
+        Employee employee = findEmployee(empId);
 
         return convertToDTO(employee);
     }
 
     // UPDATE
     public EmployeeResponseDTO updateEmployee(
-            Long id, EmployeeRequestDTO dto) {
-
-        Employee employee = findEmployee(id);
+            String empId, EmployeeRequestDTO dto) {
+        
+        
+        Employee employee = findEmployee(empId);
 
         employee.setName(dto.getName());
         employee.setEmail(dto.getEmail());
@@ -68,20 +77,20 @@ public class EmployeeService {
     }
 
     // DELETE
-    public void deleteEmployee(Long id) {
+    public void deleteEmployee(String empId) {
 
-        Employee employee = findEmployee(id);
+        Employee employee = findEmployee(empId);
 
         employeeRepository.delete(employee);
     }
 
     // Find employee or throw exception
-    private Employee findEmployee(Long id) {
+    private Employee findEmployee(String empId) {
 
-        return employeeRepository.findById(id)
+        return employeeRepository.findByEmpId(empId)
                 .orElseThrow(() ->
                     new ResourceNotFoundException(
-                        "Employee not found with id: " + id));
+                        "Employee not found with emp_id: " + empId));
     }
 
     // Convert Entity into Response DTO
@@ -90,6 +99,7 @@ public class EmployeeService {
         EmployeeResponseDTO dto = new EmployeeResponseDTO();
 
         dto.setId(employee.getId());
+        dto.setEmpId(employee.getEmpId());
         dto.setName(employee.getName());
         dto.setEmail(employee.getEmail());
         dto.setDepartment(employee.getDepartment());

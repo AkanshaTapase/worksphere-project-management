@@ -4,7 +4,7 @@ package com.worksphere.worksphere.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "app_users")
+@Table(name = "app_Users")
 public class AppUser {
 
     @Id

@@ -1,10 +1,19 @@
 package com.worksphere.worksphere.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class EmployeeRequestDTO {
+    @JsonProperty("emp_id")
+    @NotBlank(message = "Employee ID is required")
+    private String empId;
+
     @NotBlank(message = "Name is required")
     @Size(max = 100, message = "Name cannot exceed 100 characters")
     private String name;
@@ -18,37 +27,4 @@ public class EmployeeRequestDTO {
 
     @NotBlank(message = "Designation is required")
     private String designation;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(String department) {
-        this.department = department;
-    }
- 
-    public String getDesignation() {
-        return designation;
-    }
-
-
-    public void setDesignation(String designation) {
-        this.designation = designation;
-    }
 }
